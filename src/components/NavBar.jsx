@@ -11,6 +11,7 @@ const NavBar = () => {
 
   useEffect(() => {
     onUserStateChange((user) => {
+      console.log(user);
       setUser(user);
     });
   }, []);
