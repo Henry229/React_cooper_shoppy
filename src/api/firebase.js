@@ -20,20 +20,22 @@ const auth = getAuth();
 const provider = new GoogleAuthProvider();
 const database = getDatabase(app);
 
-export async function login() {
-  return signInWithPopup(auth, provider)
-    .then((result) => {
-      const user = result.user;
-      console.log('--->', user);
-      return user;
-    })
+export function login() {
+  signInWithPopup(auth, provider)
+    // .then((result) => {
+    //   const user = result.user;
+    //   console.log('--->', user);
+    //   return user;
+    // })
     .catch(console.error);
 }
 
-export async function logout() {
-  return signOut(auth).then(() => null);
+export function logout() {
+  signOut(auth);
 }
 
+//callback 은 onClick event 처럼 onAuthStateChanged로 user 상태가 변경되었다면
+//NavBar의 useEffect에 등록된 ()=> setUser()부분이 실행된다.
 export function onUserStateChange(callback) {
   onAuthStateChanged(auth, async (user) => {
     const updateUser = user ? await adminUser(user) : null;
