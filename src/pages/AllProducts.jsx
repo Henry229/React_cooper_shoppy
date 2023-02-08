@@ -1,11 +1,8 @@
 import React from 'react';
+import Products from '../components/Products';
 
 const AllProducts = () => {
-  return (
-    <div>
-      <h2>AllProducts</h2>
-    </div>
-  );
+  return <Products />;
 };
 
 export default AllProducts;

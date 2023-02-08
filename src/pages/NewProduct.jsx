@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { addNewProduct } from '../api/firebase';
 import { uploadImage } from '../api/uploader';
 import Button from '../components/ui/Button';
 
 const NewProduct = () => {
+  const formRef = useRef();
   const [product, setProduct] = useState({});
   const [file, setFile] = useState();
   const [isUploading, setIsUploading] = useState(false);
@@ -33,10 +34,11 @@ const NewProduct = () => {
           });
       })
       .finally(() => setIsUploading(false));
+    setProduct({});
   };
 
   return (
-    <section className='w-full text-center'>
+    <section className='w-full text-center mb-4'>
       <h2 className='text-2xl font-bold my-4'>Register NewProduct</h2>
       {success && <p className='my-2'>✅ {success}</p>}
       {file && (
@@ -46,7 +48,11 @@ const NewProduct = () => {
           alt='local file'
         />
       )}
-      <form className='flex flex-col px-12' onSubmit={handleSubmit}>
+      <form
+        className='flex flex-col px-12'
+        ref={formRef}
+        onSubmit={handleSubmit}
+      >
         <input
           type='file'
           accept='images/*'
