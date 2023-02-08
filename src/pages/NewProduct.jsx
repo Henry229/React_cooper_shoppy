@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
+import { addNewProduct } from '../api/firebase';
+import { uploadImage } from '../api/uploader';
 import Button from '../components/ui/Button';
-// import ImageUploader from '../api/image_uploader';
 
 const NewProduct = () => {
   const [product, setProduct] = useState({});
   const [file, setFile] = useState();
-
-  // const imageUploader = new ImageUploader();
+  const [isUploading, setIsUploading] = useState(false);
+  const [success, setSuccess] = useState();
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -19,15 +20,33 @@ const NewProduct = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsUploading(true);
+    uploadImage(file)
+      .then((url) => {
+        console.log(url);
+        addNewProduct(product, url) //
+          .then(() => {
+            setSuccess('added product successfully');
+            setTimeout(() => {
+              setSuccess(null);
+            }, 4000);
+          });
+      })
+      .finally(() => setIsUploading(false));
   };
-  // const onUpload = async (e) => {
-  //   const uploaded = await imageUploader.upload(e.target.files[0]);
-  // };
+
   return (
-    <section>
-      {file && <img src={URL.createObjectURL(file)} alt='local file' />}
-      <h1>Register NewProduct</h1>
-      <form onSubmit={handleSubmit}>
+    <section className='w-full text-center'>
+      <h2 className='text-2xl font-bold my-4'>Register NewProduct</h2>
+      {success && <p className='my-2'>✅ {success}</p>}
+      {file && (
+        <img
+          className='w-96 mx-auto mb-2'
+          src={URL.createObjectURL(file)}
+          alt='local file'
+        />
+      )}
+      <form className='flex flex-col px-12' onSubmit={handleSubmit}>
         <input
           type='file'
           accept='images/*'
@@ -63,7 +82,7 @@ const NewProduct = () => {
         <input
           type='text'
           name='description'
-          value={product.description}
+          value={product.description ?? ''}
           placeholder='Description'
           required
           onChange={handleChange}
@@ -76,7 +95,10 @@ const NewProduct = () => {
           required
           onChange={handleChange}
         />
-        <Button text={'Register Product'} />
+        <Button
+          text={isUploading ? 'Uploading...' : 'Register Product'}
+          disabled={isUploading}
+        />
       </form>
     </section>
   );
