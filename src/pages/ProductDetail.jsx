@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useAuthContext } from '../context/AuthContext';
 import Button from '../components/ui/Button';
+import { addOrUpdateToCart } from '../api/firebase';
 
 const ProductDetail = () => {
+  const { uid } = useAuthContext();
   const {
     state: {
       product: { id, title, description, category, price, image, options },
@@ -10,7 +13,10 @@ const ProductDetail = () => {
   } = useLocation();
   const [selected, setSelected] = useState(options && options[0]);
   const handleSelect = (e) => setSelected(e.target.value);
-  const handleClick = (e) => {}; //Todo: implement add to cart
+  const handleClick = (e) => {
+    const product = { id, image, title, price, option: selected, quantity: 1 };
+    addOrUpdateToCart(uid, product);
+  };
 
   return (
     <>
@@ -24,7 +30,7 @@ const ProductDetail = () => {
           </p>
           <p className='py-4 text-lg'>{description}</p>
           <div className='flex items-center'>
-            <label className='text-brand font-bold' htmlfor='select'>
+            <label className='text-brand font-bold' htmlFor='select'>
               options:
             </label>
             <select

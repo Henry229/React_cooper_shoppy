@@ -6,7 +6,8 @@ import { Link } from 'react-router-dom';
 // import { useEffect } from 'react';
 import User from './User';
 import Button from './ui/Button';
-import { useAuthContext } from './context/AuthContext';
+import { useAuthContext } from '../context/AuthContext';
+import CartStatus from './CartStatus';
 
 const NavBar = () => {
   const { user, login, logout } = useAuthContext();
@@ -27,7 +28,11 @@ const NavBar = () => {
       </Link>
       <nav className='flex items-center gap-4 font-semibold'>
         <Link to='/products'>Products</Link>
-        {user && <Link to='/carts'>Carts</Link>}
+        {user && (
+          <Link to='/carts'>
+            <CartStatus />
+          </Link>
+        )}
         {user && user.isAdmin && (
           <Link to='/products/new' className='text-2xl'>
             <BsFillPencilFill />
