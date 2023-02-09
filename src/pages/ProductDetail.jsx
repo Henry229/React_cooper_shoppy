@@ -1,21 +1,31 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useAuthContext } from '../context/AuthContext';
 import Button from '../components/ui/Button';
-import { addOrUpdateToCart } from '../api/firebase';
+import useCart from '../hooks/useCart';
 
 const ProductDetail = () => {
-  const { uid } = useAuthContext();
+  const { addOrUpdateItem } = useCart();
   const {
     state: {
       product: { id, title, description, category, price, image, options },
     },
   } = useLocation();
+  const [success, setSuccess] = useState();
   const [selected, setSelected] = useState(options && options[0]);
   const handleSelect = (e) => setSelected(e.target.value);
   const handleClick = (e) => {
     const product = { id, image, title, price, option: selected, quantity: 1 };
-    addOrUpdateToCart(uid, product);
+    addOrUpdateItem.mutate(product, {
+      onSuccess: () => {
+        setSuccess('Added to cart successfully!! 😀');
+        setTimeout(() => {
+          setSuccess(null);
+        }, 3000);
+      },
+      // onError: () => {
+      //   setSuccess(false);
+      // },
+    });
   };
 
   return (
@@ -45,6 +55,7 @@ const ProductDetail = () => {
                 ))}
             </select>
           </div>
+          {success && <p className='my-2'>{success}</p>}
           <Button text='Add Cart' onClick={handleClick} />
         </div>
       </section>

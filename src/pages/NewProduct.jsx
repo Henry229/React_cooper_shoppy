@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
-import { addNewProduct } from '../api/firebase';
 import { uploadImage } from '../api/uploader';
 import Button from '../components/ui/Button';
+import useProducts from '../hooks/useProducts';
 
 const NewProduct = () => {
   const formRef = useRef();
@@ -9,6 +9,7 @@ const NewProduct = () => {
   const [file, setFile] = useState();
   const [isUploading, setIsUploading] = useState(false);
   const [success, setSuccess] = useState();
+  const { addProduct } = useProducts();
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -24,14 +25,17 @@ const NewProduct = () => {
     setIsUploading(true);
     uploadImage(file)
       .then((url) => {
-        console.log(url);
-        addNewProduct(product, url) //
-          .then(() => {
-            setSuccess('added product successfully');
-            setTimeout(() => {
-              setSuccess(null);
-            }, 4000);
-          });
+        addProduct.mutate(
+          { product, url },
+          {
+            onSuccess: () => {
+              setSuccess('added product successfully');
+              setTimeout(() => {
+                setSuccess(null);
+              }, 4000);
+            },
+          }
+        );
       })
       .finally(() => setIsUploading(false));
     setProduct({});
